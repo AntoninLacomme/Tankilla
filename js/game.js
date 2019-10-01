@@ -268,13 +268,17 @@ function drawAll () {
   for (let i = 0; i < listMunitions.length; i++) {
     let munition = listMunitions[i];
     listAllTanks.forEach((ennemiTank) => {
-      if (munition.getIdTank() != ennemiTank)
       if (munition.touch(ennemiTank)) {
-        listMunitions.splice(i, 1);
+        if (listMunitions[i].getIdMunition() == munition.getIdMunition()) {
+          console.log(munition, listMunitions[i])
+          listMunitions.splice(i, 1);
+        }
       }
       else {
         if (!munition.move()) {
-          listMunitions.splice(i, 1);
+          if (undefined != listMunitions[i]) {
+            listMunitions.splice(i, 1);
+          }
         }
       }
     });
@@ -352,8 +356,10 @@ function drawCanvasWeapon (ctx, idWeapon) {
   MunitionFire.drawMunition(ctx, 130, posy);
   // draw munition bulle
   MunitionBulle.drawMunition(ctx, 180, posy);
+  // draw munition Chevrotine
+  MunitionChevrotine.drawMunition(ctx, 230, posy);
   // draw munition Amour
-  MunitionLove.drawMunition(ctx, 230, posy);
+  MunitionLove.drawMunition(ctx, 280, posy);
 
 
   // la sélection

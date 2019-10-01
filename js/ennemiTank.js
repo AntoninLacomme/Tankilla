@@ -9,7 +9,7 @@ class EnnemiTank extends Tank {
     this.timeBeforeShoot = 50;
     this.accTimeBeforeShoot = 0;
 
-    this.idMunition = 2; //Math.random() * 4 | 0;
+    this.idMunition = Math.random() * 5 | 0;
 
     // le point à rejoindre
     this.xtojoin = this.posx;

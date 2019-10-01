@@ -99,8 +99,8 @@ class Tank {
   changeWeapon (acc) {
     this.idMunition += acc;
     if (this.idMunition < 0)
-      this.idMunition = 4;
-    if (this.idMunition > 4)
+      this.idMunition = 5;
+    if (this.idMunition > 5)
       this.idMunition = 0;
   }
 
@@ -333,6 +333,9 @@ class Tank {
         newMunition.push(new MunitionBulle (this.idTank, this.posx, this.posy, lghcanon * Math.cos((anglecanon + 180) * Math.PI / 180), lghcanon * Math.sin((anglecanon + 180) * Math.PI / 180), visex, visey));
       }
       if (this.idMunition == 4) {
+        newMunition.push(new MunitionChevrotine (this.idTank, this.posx, this.posy, lghcanon * Math.cos((anglecanon + 180) * Math.PI / 180), lghcanon * Math.sin((anglecanon + 180) * Math.PI / 180), visex, visey));
+      }
+      if (this.idMunition == 5) {
         newMunition.push(new MunitionLove (this.idTank, this.posx, this.posy, lghcanon * Math.cos((anglecanon + 180) * Math.PI / 180), lghcanon * Math.sin((anglecanon + 180) * Math.PI / 180), visex, visey));
       }
       this.timeBeforeFire = newMunition[0].getTimeReset();

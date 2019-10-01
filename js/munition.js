@@ -1,7 +1,7 @@
 
 class Munition {
 
-  constructor (idTank, name, timereset, power, posx, posy, anglecanon, visex, visey) {
+  constructor (idTank, name, timereset, power, posx, posy, visex, visey) {
     this.idTank = idTank;         // l'id du tank ayant invoqué la munition
     this.name = name;             // nom de la munition
     this.timereset = timereset;   // le temps d'attente avant de pouvoir retirer cette munition
@@ -22,6 +22,7 @@ class Munition {
   getRadius () { return this.radius; }
   getAngle () { return this.angle; }
   getIdTank () { return this.idTank; }
+  getIdMunition () { return this.ismun; }
   getTimeReset () {
     return this.timereset;
   }
@@ -63,6 +64,8 @@ class MunitionNormal extends Munition {
 
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
     super (idTank, "Normale", 50 , 60, posx, posy, visex, visey);
+
+    this.idmun = 0;
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) );
     this.maxDuration = 360;
@@ -152,6 +155,7 @@ class MunitionFire extends Munition {
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random() * 0.8 -0.4;
     this.maxDuration = 160 + Math.random() * 40 - 20;
     this.basepower = this.power;
+    this.idmun = 1;
 
     // la vitesse de cette munition est de 5
     this.dx = Math.cos(this.angle) * 2;
@@ -202,8 +206,55 @@ class MunitionGrenaille extends Munition {
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random()*1.2-0.6;
     this.maxDuration = 50;
+    this.idmun = 2;
 
     // la vitesse de cette munition est de 8
+    this.dx = Math.cos(this.angle) * 6;
+    this.dy = Math.sin(this.angle) * 6;
+
+    if (visex < this.posx) {
+        this.dx *= -1;
+        this.dy *= -1;
+    }
+
+    // on reset posx et posy
+    this.posx += anglecanonx;
+    this.posy += anglecanony;
+
+    this.radius = 2;
+
+    this.angle = this.angle * constPI;
+  }
+
+  draw (ctx) {
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.arc(this.posx, this.posy, this.radius, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  static drawMunition (ctx, posx, posy) {
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.arc(posx, posy, 2, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+
+
+class MunitionChevrotine extends Munition {
+  constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
+    super (idTank, "Chevrotine", 32, 20, posx, posy, visex, visey);
+    this.angle = Math.atan( (visey - posy) / (visex - posx) );
+    this.maxDuration = 40;
+    this.anglecanonx = anglecanonx;
+    this.anglecanony = anglecanony;
+    this.radius = 8;
+    this.idmun = 3;
+
+    // la vitesse de cette munition est de 6
     this.dx = Math.cos(this.angle) * 6;
     this.dy = Math.sin(this.angle) * 6;
 
@@ -219,10 +270,29 @@ class MunitionGrenaille extends Munition {
     this.angle = this.angle * constPI;
   }
 
+  move () {
+    if (this.actualDuration >= this.maxDuration) {
+      for (let i = 0; i < 16; i++) {
+        listMunitions.push(new MunitionSummonChevrotine (this.idTank, this.posx, this.posy, this.dx, this.dy, this.angle, this.visex, this.visey));
+      }
+      return false;
+    }
+    if (this.posx < 0 || this.posx > canvas.width) {
+      return false;
+    }
+    if (this.posy < 0 || this.posy > canvas.height) {
+      return false;
+    }
+    this.actualDuration += 1;
+    this.posx += this.dx;
+    this.posy += this.dy;
+    return true;
+  }
+
   draw (ctx) {
     ctx.fillStyle = "black";
     ctx.beginPath();
-    ctx.arc(this.posx, this.posy, 2, 0, Math.PI*2, true);
+    ctx.arc(this.posx, this.posy, 8, 0, Math.PI*2, true);
     ctx.closePath();
     ctx.fill();
   }
@@ -230,7 +300,30 @@ class MunitionGrenaille extends Munition {
   static drawMunition (ctx, posx, posy) {
     ctx.fillStyle = "black";
     ctx.beginPath();
-    ctx.arc(posx, posy, 2, 0, Math.PI*2, true);
+    ctx.arc(posx, posy, 8, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+}
+
+class MunitionSummonChevrotine extends Munition {
+  constructor (idTank, posx, posy, dx, dy, angle, visex, visey) {
+    super (idTank, "Grenaille", 30, 8, posx, posy, visex, visey);
+    this.maxDuration = 50;
+    this.idmun = 4;
+    this.radius = 2;
+
+    this.dx = dx + Math.random()*1.2-0.6;
+    this.dy = dy + Math.random()*1.2-0.6;
+
+    this.angle = angle * constPI;
+  }
+
+  draw (ctx) {
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.arc(this.posx, this.posy, 2, 0, Math.PI*2, true);
     ctx.closePath();
     ctx.fill();
   }
@@ -244,6 +337,7 @@ class MunitionLove extends Munition {
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random() * 8 -4;
     this.maxDuration = 500;
+    this.idmun = 5;
 
     // la vitesse de cette munition est de 5
     this.dx = Math.cos(this.angle) * 3;
