@@ -197,52 +197,20 @@ class Tank {
     // on défini la longueur des chenilles
 
     // définition du centre de rotation de la chenille gauche
-    let centXleft = this.posx + this.arrayChenilles.cxleft;
-    let centYleft = this.posy + this.arrayChenilles.cyleft;
+    // let centXleft = this.posx + this.arrayChenilles.cxleft;
+    // let centYleft = this.posy + this.arrayChenilles.cyleft;
     // définition du centre de rotation de la chenille droite
-    let centXright = this.posx + this.arrayChenilles.cxright;
-    let centYright = this.posy + this.arrayChenilles.cyright;
+    // let centXright = this.posx + this.arrayChenilles.cxright;
+    // let centYright = this.posy + this.arrayChenilles.cyright;
 
     // dessin de la chenille gauche
-
-    ctx.fillStyle = 'grey';
-    ctx.beginPath();
-    ctx.moveTo(centXleft + this.arrayChenilles.firstPointX, centYleft + this.arrayChenilles.firstPointY);
-    ctx.lineTo(centXleft + this.arrayChenilles.twoPointX, centYleft + this.arrayChenilles.twoPointY);
-    ctx.lineTo(centXleft + this.arrayChenilles.threePointX, centYleft + this.arrayChenilles.threePointY);
-    ctx.lineTo(centXleft + this.arrayChenilles.fourPointX, centYleft + this.arrayChenilles.fourPointY);
-    ctx.closePath();
-    ctx.fill();
+    this.drawLeftTread (this.posx + this.arrayChenilles.cxleft, this.posy + this.arrayChenilles.cyleft);
     // dessin de la chenille droite
-    ctx.beginPath();
-    ctx.moveTo(centXright + this.arrayChenilles.firstPointX, centYright + this.arrayChenilles.firstPointY);
-    ctx.lineTo(centXright + this.arrayChenilles.twoPointX, centYright + this.arrayChenilles.twoPointY);
-    ctx.lineTo(centXright + this.arrayChenilles.threePointX, centYright + this.arrayChenilles.threePointY);
-    ctx.lineTo(centXright + this.arrayChenilles.fourPointX, centYright + this.arrayChenilles.fourPointY);
-    ctx.closePath();
-    ctx.fill();
-
-
+    this.drawRightTread (this.posx + this.arrayChenilles.cxright, this.posy + this.arrayChenilles.cyright);
     // on dessine le corps principal
-    ctx.fillStyle = this.colorbody;
-    ctx.beginPath();
-    ctx.moveTo(this.posx + this.arrayBody.firstPointX, this.posy + this.arrayBody.firstPointY);
-    ctx.lineTo(this.posx + this.arrayBody.twoPointX, this.posy + this.arrayBody.twoPointY);
-    ctx.lineTo(this.posx + this.arrayBody.threePointX, this.posy + this.arrayBody.threePointY);
-    ctx.lineTo(this.posx + this.arrayBody.fourPointX, this.posy + this.arrayBody.fourPointY);
-    ctx.closePath();
-    ctx.fill();
-
+    this.drawBody ();
     // on dessine le canon
-    let lghcanon = (this.radius + this.minradius) * 0.8;    // sa longueur
-    let anglecanon = this.getAngleCanon(visex, visey);
-    ctx.fillStyle = 'black';
-    ctx.beginPath();
-    ctx.moveTo(this.posx, this.posy);
-    ctx.lineTo(this.posx + lghcanon * Math.cos((anglecanon + 172) * constPI), this.posy + lghcanon * Math.sin((anglecanon + 172) * constPI));
-    ctx.lineTo(this.posx + lghcanon * Math.cos((anglecanon + 188) * constPI), this.posy + lghcanon * Math.sin((anglecanon + 188) * constPI));
-    ctx.closePath();
-    ctx.fill();
+    this.drawCanon (visex, visey);
 
 
     // on dessine la tourelle
@@ -272,6 +240,55 @@ class Tank {
     ctx.fillRect(this.posx - this.minradius*2, this.posy - this.radius - 20, this.minradius * 4, 5);
     ctx.fillStyle = 'green';
     ctx.fillRect(this.posx - this.minradius*2, this.posy - this.radius - 20, (this.minradius * 4) * (this.actuallife / this.maxlife), 5);
+  }
+
+  // dessine la chenille gauche du tank
+  drawLeftTread (centXleft, centYleft) {
+    ctx.fillStyle = 'grey';
+    ctx.beginPath();
+    ctx.moveTo(centXleft + this.arrayChenilles.firstPointX, centYleft + this.arrayChenilles.firstPointY);
+    ctx.lineTo(centXleft + this.arrayChenilles.twoPointX, centYleft + this.arrayChenilles.twoPointY);
+    ctx.lineTo(centXleft + this.arrayChenilles.threePointX, centYleft + this.arrayChenilles.threePointY);
+    ctx.lineTo(centXleft + this.arrayChenilles.fourPointX, centYleft + this.arrayChenilles.fourPointY);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // dessine la chenille droite du tank
+  drawRightTread (centXright, centYright) {
+    ctx.fillStyle = 'grey';
+    ctx.beginPath();
+    ctx.moveTo(centXright + this.arrayChenilles.firstPointX, centYright + this.arrayChenilles.firstPointY);
+    ctx.lineTo(centXright + this.arrayChenilles.twoPointX, centYright + this.arrayChenilles.twoPointY);
+    ctx.lineTo(centXright + this.arrayChenilles.threePointX, centYright + this.arrayChenilles.threePointY);
+    ctx.lineTo(centXright + this.arrayChenilles.fourPointX, centYright + this.arrayChenilles.fourPointY);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // dessine le corps
+  drawBody () {
+    ctx.fillStyle = this.colorbody;
+    ctx.beginPath();
+    ctx.moveTo(this.posx + this.arrayBody.firstPointX, this.posy + this.arrayBody.firstPointY);
+    ctx.lineTo(this.posx + this.arrayBody.twoPointX, this.posy + this.arrayBody.twoPointY);
+    ctx.lineTo(this.posx + this.arrayBody.threePointX, this.posy + this.arrayBody.threePointY);
+    ctx.lineTo(this.posx + this.arrayBody.fourPointX, this.posy + this.arrayBody.fourPointY);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // dessine le canon
+  drawCanon (visex, visey) {
+    let lghcanon = (this.radius + this.minradius) * 0.8;    // longueur du canon, soit 80% de la somme des deux rayons du tank
+    let anglecanon = this.getAngleCanon(visex, visey);      // l'angle du canon
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(this.posx, this.posy);
+    ctx.lineTo(this.posx + lghcanon * Math.cos((anglecanon + 172) * constPI), this.posy + lghcanon * Math.sin((anglecanon + 172) * constPI));
+    ctx.lineTo(this.posx + lghcanon * Math.cos((anglecanon + 188) * constPI), this.posy + lghcanon * Math.sin((anglecanon + 188) * constPI));
+    ctx.closePath();
+    ctx.fill();
   }
 
   move () {

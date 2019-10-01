@@ -2,19 +2,20 @@
 class Munition {
 
   constructor (idTank, name, timereset, power, posx, posy, anglecanon, visex, visey) {
-    this.idTank = idTank;
-    this.name = name;
-    this.timereset = timereset;
-    this.power = power;
-    this.posx = posx;
-    this.posy = posy;
-    this.visex = visex;
-    this.visey = visey;
-    this.actualDuration = 0;
-    this.angle = 0;
-    this.radius = 0;
+    this.idTank = idTank;         // l'id du tank ayant invoqué la munition
+    this.name = name;             // nom de la munition
+    this.timereset = timereset;   // le temps d'attente avant de pouvoir retirer cette munition
+    this.power = power;           // la puissance de la munition
+    this.posx = posx;             // position du centre de rotation en x sur le canvas
+    this.posy = posy;             // position du centre de rotation en y sur le canvas
+    this.visex = visex;           // position en x visé sur la canvas
+    this.visey = visey;           // position en y visé sur la canvas
+    this.actualDuration = 0;      // nombre de frames "vécues" par la munition
+    this.angle = 0;               // angle de la munition
+    this.radius = 0;              // rayon de la munition
   }
 
+  // ----- les Guetteurs ----- //
   getName () { return this.name; }
   getPosX () { return this.posx; }
   getPosY () { return this.posy; }
@@ -43,9 +44,9 @@ class Munition {
     return true;
   }
 
+  // fonction vérifiant si la munition à touché le tank entré en paramètre
   touch (tank) {
     if (this.getIdTank() != tank.getIdTank()) {
-      //let limites = tank.getLimites();
       if (Math.sqrt((tank.getPosX() - this.posx) ** 2 + (tank.getPosY() - this.posy) ** 2) <= tank.getHeight() + this.radius) {
         tank.doDamages(this.power);
         return true;
@@ -56,6 +57,8 @@ class Munition {
 
 }
 
+// munition Normale
+// un projectile rapide en forme d'obus, dont les dégâts augmentent avec la longueur de son parcours
 class MunitionNormal extends Munition {
 
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
@@ -120,9 +123,27 @@ class MunitionNormal extends Munition {
     return false;
   }
 
+  static drawMunition (ctx, posx, posy) {
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    let angle = -90;
+
+    ctx.moveTo(posx + 10 * Math.cos((angle + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 45) * Math.PI / 180));
+    ctx.lineTo(posx + 10 * Math.cos((angle + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 45) * Math.PI / 180));
+    ctx.lineTo(posx + 10 * Math.cos((angle + 90 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle +90 + 45) * Math.PI / 180));
+    ctx.lineTo(posx + 10 * Math.cos((angle + 180 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 180 + 45) * Math.PI / 180));
+    ctx.lineTo(posx + 10 * Math.cos((angle + 270 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 270 + 45) * Math.PI / 180));
+    ctx.lineTo(posx + 15 * Math.cos((angle + 0) * Math.PI / 180), posy + 15 * Math.sin((angle + 0) * Math.PI / 180));
+
+    ctx.closePath();
+    ctx.fill();
+  }
 
 }
 
+// LE LANCE FLAAAAAAAAAAME
+// une munition particulièrement puissante quand elle est tirée, mais rapidement en puissance
+// au fur et à mesure que la couleur rougie
 class MunitionFire extends Munition {
 
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
@@ -163,8 +184,18 @@ class MunitionFire extends Munition {
     ctx.fill();
   }
 
+  static drawMunition (ctx, posx, posy) {
+    let radius = 10;
+    ctx.fillStyle = "rgb(255,255,0)";
+    ctx.beginPath();
+    ctx.arc(posx, posy, radius, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
 }
 
+// Munition Grenaille, tire plusieurs petits projectiles à grande dispersion
 class MunitionGrenaille extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
     super (idTank, "Grenaille", 30, 11, posx, posy, visex, visey);
@@ -195,8 +226,18 @@ class MunitionGrenaille extends Munition {
     ctx.closePath();
     ctx.fill();
   }
+
+  static drawMunition (ctx, posx, posy) {
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.arc(posx, posy, 2, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
 }
 
+// Munition d'amour !
+// Ne tuez pas vos ennemis, AIMEZ LES !
 class MunitionLove extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
     super (idTank, "Pouvoir d'amour", 5, -50, posx, posy, visex, visey);
@@ -246,15 +287,44 @@ class MunitionLove extends Munition {
     ctx.closePath();
     ctx.fill();
   }
+
+  static drawMunition (ctx, posx, posy) {
+    ctx.fillStyle = "rgb(255, 200 ,200)";
+    // dessinons la base, un carré
+    ctx.beginPath();
+
+    ctx.moveTo(posx + 20 * Math.cos((angle) * Math.PI / 180), posy + 20 * Math.sin((angle) * Math.PI / 180));
+    ctx.lineTo(posx + 20 * Math.cos((angle + 90) * Math.PI / 180), posy + 20 * Math.sin((angle +90) * Math.PI / 180));
+
+    ctx.lineTo(posx + 20 * Math.cos((angle + 180) * Math.PI / 180), posy + 20 * Math.sin((angle + 180) * Math.PI / 180));
+    ctx.lineTo(posx + 20 * Math.cos((angle + 270) * Math.PI / 180), posy + 20 * Math.sin((angle + 270) * Math.PI / 180));
+
+
+    ctx.closePath();
+    ctx.fill();
+    // puis les deux cercles qui feront les oreilles
+
+    // Math.sqrt(200) = 14.14
+    ctx.beginPath();
+    ctx.arc(posx + 9, posy - 9, 14, Math.PI * 0.25, Math.PI * 1.25, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(posx - 10, posy - 10, 14, Math.PI * 1.75, Math.PI*2.75, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
 }
 
-
+// Munition Bulle, tire un petit cercle bleu qui grandi avec le temps
+// plus il est grand, plus il tape fort
 class MunitionBulle extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
     super (idTank, "Bubulles", 24, 35, posx, posy, visex, visey);
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random() * 1.2 - 0.6;
-    this.maxDuration = 20 + Math.random() * 230;
+    this.maxDuration = 60 + Math.random() * 180;
     this.radius = 10;
 
     // la vitesse de cette munition est de 5
@@ -274,7 +344,7 @@ class MunitionBulle extends Munition {
   }
 
   dropPower () {
-    this.power = this.power + 0.1;
+    this.power = this.power + 0.5;
   }
 
   draw (ctx) {
@@ -283,6 +353,14 @@ class MunitionBulle extends Munition {
     ctx.strokeStyle = "blue";
     ctx.beginPath();
     ctx.arc(this.posx, this.posy, this.radius, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  static drawMunition (ctx, posx, posy) {
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(posx, posy, 10, 0, Math.PI*2, true);
     ctx.closePath();
     ctx.stroke();
   }

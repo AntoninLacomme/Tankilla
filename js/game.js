@@ -18,9 +18,11 @@ function init () {
   // création d'un objet game, qui centralisera la partie
   //let game = new Game(document.querySelector("#canvasTankilla"));
   canvas = document.querySelector("#canvasTankilla");
+  canvasBackground = document.querySelector("#canvasTankillaBackGround");
   canvasmun = document.querySelector("#canvasWeapon");
 
   ctx = canvas.getContext("2d");
+  ctxbg = canvasBackground.getContext("2d");
   ctxmun = canvasmun.getContext("2d");
 
   idAnim = 0;
@@ -46,10 +48,7 @@ function init () {
   mainTank = null;
   listEnnemisTank = [];
 
-
   angledft = 0;
-
-
 
   canvas.onmousemove = function(event) {
     mouse.x = event.offsetX;
@@ -119,7 +118,8 @@ function init () {
   });
 
 
-  initializeGame();
+  drawBackground ();
+  initializeGame ();
   drawCanvasWeapon(ctxmun, mainTank.getIdMunition());
 }
 
@@ -241,50 +241,6 @@ function drawAll () {
   // on nettoie le canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // on dessine le background
-  ctx.fillStyle = "dimgrey";
-  ctx.beginPath();
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.closePath();
-
-  ctx.fillStyle = "yellow";
-  ctx.beginPath();
-  ctx.fillRect(0, canvas.height / 2 - 5, canvas.width, 10);
-  ctx.closePath();
-
-  ctx.beginPath();
-  ctx.fillRect(canvas.width / 2 - 5, 0, 10, canvas.height);
-  ctx.closePath();
-
-  ctx.fillStyle = "yellow";
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.4, 0, Math.PI*2, false);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = "darkgrey";
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38, 0, Math.PI*2, false);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "dimgrey";
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
-          Math.PI * 1.29, Math.PI * 1.41, false);
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
-          Math.PI * 2.59, Math.PI * 2.71, false);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
-          Math.PI * 0.79, Math.PI * 0.91, false);
-  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
-          Math.PI * 2.09, Math.PI * 2.21, false);
-  ctx.closePath();
-  ctx.fill();
-
-
 
   // on dessine :
   // - le tank
@@ -335,83 +291,69 @@ function drawAll () {
 
   listEnnemisTank.forEach( (tank) => {
     tank.move();
-
   });
+}
+
+function drawBackground () {
+  // on dessine le background
+  ctxbg.fillStyle = "dimgrey";
+  ctxbg.beginPath();
+  ctxbg.fillRect(0, 0, canvas.width, canvas.height);
+  ctxbg.closePath();
+
+  ctxbg.fillStyle = "yellow";
+  ctxbg.beginPath();
+  ctxbg.fillRect(0, canvas.height / 2 - 5, canvas.width, 10);
+  ctxbg.closePath();
+
+  ctxbg.beginPath();
+  ctxbg.fillRect(canvas.width / 2 - 5, 0, 10, canvas.height);
+  ctxbg.closePath();
+
+  ctxbg.fillStyle = "yellow";
+  ctxbg.beginPath();
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.4, 0, Math.PI*2, false);
+  ctxbg.closePath();
+  ctxbg.fill();
+  ctxbg.fillStyle = "darkgrey";
+  ctxbg.beginPath();
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38, 0, Math.PI*2, false);
+  ctxbg.closePath();
+  ctxbg.fill();
+
+  ctxbg.fillStyle = "dimgrey";
+  ctxbg.beginPath();
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
+          Math.PI * 1.29, Math.PI * 1.41, false);
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
+          Math.PI * 2.59, Math.PI * 2.71, false);
+  ctxbg.closePath();
+  ctxbg.fill();
+
+  ctxbg.beginPath();
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
+          Math.PI * 0.79, Math.PI * 0.91, false);
+  ctxbg.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) *0.38,
+          Math.PI * 2.09, Math.PI * 2.21, false);
+  ctxbg.closePath();
+  ctxbg.fill();
 }
 
 function drawCanvasWeapon (ctx, idWeapon) {
   ctx.clearRect(0, 0, canvasmun.width, canvasmun.height);
-  // draw munition Normale
-  ctx.fillStyle = "black";
-  ctx.beginPath();
-  let posx = 30;
+
   let posy = canvasWeapon.height / 2 + 5;
-  let angle = -90;
 
-  ctx.moveTo(posx + 10 * Math.cos((angle + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 45) * Math.PI / 180));
-  ctx.lineTo(posx + 10 * Math.cos((angle + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 45) * Math.PI / 180));
-  ctx.lineTo(posx + 10 * Math.cos((angle + 90 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle +90 + 45) * Math.PI / 180));
-  ctx.lineTo(posx + 10 * Math.cos((angle + 180 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 180 + 45) * Math.PI / 180));
-  ctx.lineTo(posx + 10 * Math.cos((angle + 270 + 45) * Math.PI / 180), posy + 10 * Math.sin((angle + 270 + 45) * Math.PI / 180));
-  ctx.lineTo(posx + 15 * Math.cos((angle + 0) * Math.PI / 180), posy + 15 * Math.sin((angle + 0) * Math.PI / 180));
-
-  ctx.closePath();
-  ctx.fill();
-
-
+  // draw munition Normale
+  MunitionNormal.drawMunition(ctx, 30, posy);
   // draw munition Grenaille
-  posx = 80;
-  ctx.fillStyle = "black";
-  ctx.beginPath();
-  ctx.arc(posx, posy, 2, 0, Math.PI*2, true);
-  ctx.closePath();
-  ctx.fill();
-
-
+  MunitionGrenaille.drawMunition(ctx, 80, posy);
   // draw munition Fire
-  posx = 130;
-  let radius = 10;
-  ctx.fillStyle = "rgb(255,255,0)";
-  ctx.beginPath();
-  ctx.arc(posx, posy, radius, 0, Math.PI*2, true);
-  ctx.closePath();
-  ctx.fill();
-
+  MunitionFire.drawMunition(ctx, 130, posy);
   // draw munition bulle
-  posx = 180;
-  ctx.strokeStyle = "blue";
-  ctx.beginPath();
-  ctx.arc(posx, posy, radius, 0, Math.PI*2, true);
-  ctx.closePath();
-  ctx.stroke();
-
+  MunitionBulle.drawMunition(ctx, 180, posy);
   // draw munition Amour
-  posx = 230;
-  ctx.fillStyle = "rgb(255, 200 ,200)";
-  // dessinons la base, un carré
-  ctx.beginPath();
-
-  ctx.moveTo(posx + 20 * Math.cos((angle) * Math.PI / 180), posy + 20 * Math.sin((angle) * Math.PI / 180));
-  ctx.lineTo(posx + 20 * Math.cos((angle + 90) * Math.PI / 180), posy + 20 * Math.sin((angle +90) * Math.PI / 180));
-
-  ctx.lineTo(posx + 20 * Math.cos((angle + 180) * Math.PI / 180), posy + 20 * Math.sin((angle + 180) * Math.PI / 180));
-  ctx.lineTo(posx + 20 * Math.cos((angle + 270) * Math.PI / 180), posy + 20 * Math.sin((angle + 270) * Math.PI / 180));
-
-
-  ctx.closePath();
-  ctx.fill();
-  // puis les deux cercles qui feront les oreilles
-
-  // Math.sqrt(200) = 14.14
-  ctx.beginPath();
-  ctx.arc(posx + 9, posy - 9, 14, Math.PI * 0.25, Math.PI * 1.25, true);
-  ctx.closePath();
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(posx - 10, posy - 10, 14, Math.PI * 1.75, Math.PI*2.75, true);
-  ctx.closePath();
-  ctx.fill();
-
+  MunitionLove.drawMunition(ctx, 230, posy);
 
 
   // la sélection

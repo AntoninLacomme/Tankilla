@@ -3,12 +3,19 @@ body {
 }
 
 #canvasTankilla {
+  position: absolute;
   border: solid thin black;
-  background-color: ivory;
+  /*background-color: ivory;*/
+}
+
+#canvasTankillaBackGround {
+  position: absolute;
 }
 
 #canvasWeapon {
   border: solid thin black;
   background-color: ivory;
   margin-top: 1em;
+  position: absolute;
+  top: 600px;
 }
