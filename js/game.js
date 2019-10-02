@@ -251,7 +251,7 @@ function drawAll () {
   });
   // - les munitions
   listMunitions.forEach((munition) => {
-    munition.draw(ctx, mouse.x, mouse.y);
+    munition.draw(ctx);
   });
 
   // on bouge
@@ -264,24 +264,19 @@ function drawAll () {
     listAllTanks.push(tank);
   });
 
-  // pour chacun de ces tanks, on ckeck si une munition les a touché
-  for (let i = 0; i < listMunitions.length; i++) {
+  // Pour chaque munition, on check si elle a touché un tank ou si elle a atteint sa limite
+  for (let i = listMunitions.length -1; i >= 0; i--) {
     let munition = listMunitions[i];
+
     listAllTanks.forEach((ennemiTank) => {
       if (munition.touch(ennemiTank)) {
-        if (listMunitions[i].getIdMunition() == munition.getIdMunition()) {
-          console.log(munition, listMunitions[i])
           listMunitions.splice(i, 1);
-        }
-      }
-      else {
-        if (!munition.move()) {
-          if (undefined != listMunitions[i]) {
-            listMunitions.splice(i, 1);
-          }
-        }
       }
     });
+
+    if (!munition.move()) {
+        listMunitions.splice(i, 1);
+    }
   }
 
   // rotation du Tank

@@ -1,5 +1,3 @@
-
-
 class Tank {
 
   // constructeur de la classe

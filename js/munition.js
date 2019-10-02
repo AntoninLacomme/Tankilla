@@ -116,12 +116,13 @@ class MunitionNormal extends Munition {
   }
 
   touch (tank) {
-    //let limites = tank.getLimites();
-    if (Math.sqrt((tank.getPosX() - this.posx) ** 2 + (tank.getPosY() - this.posy) ** 2) <= tank.getHeight() + this.radius) {
-      tank.doDamages(this.power);
+    if (this.getIdTank() != tank.getIdTank()) {
+      if (Math.sqrt((tank.getPosX() - this.posx) ** 2 + (tank.getPosY() - this.posy) ** 2) <= tank.getHeight() + this.radius) {
+        tank.doDamages(this.power);
 
-      tank.knockBack(this.dx * this.power / 30, this.dy * this.power / 30);
-      return true;
+        tank.knockBack(this.dx * this.power / 30, this.dy * this.power / 30);
+        return true;
+      }
     }
     return false;
   }
@@ -150,16 +151,16 @@ class MunitionNormal extends Munition {
 class MunitionFire extends Munition {
 
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
-    super (idTank, "Feu", 1, 6, posx, posy, visex, visey);
+    super (idTank, "Feu", 1, 4, posx, posy, visex, visey);
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random() * 0.8 -0.4;
-    this.maxDuration = 160 + Math.random() * 40 - 20;
+    this.maxDuration = 80 + Math.random() * 40 - 20;
     this.basepower = this.power;
     this.idmun = 1;
 
     // la vitesse de cette munition est de 5
-    this.dx = Math.cos(this.angle) * 2;
-    this.dy = Math.sin(this.angle) * 2;
+    this.dx = Math.cos(this.angle) * 5;
+    this.dy = Math.sin(this.angle) * 5;
 
     this.radius = 10;
 
@@ -176,12 +177,12 @@ class MunitionFire extends Munition {
   }
 
   dropPower () {
-    this.power = this.basepower - Math.log((this.actualDuration+1) * 2);
+    this.power = this.basepower - Math.log((this.actualDuration+1));
   }
 
   draw (ctx) {
     this.dropPower ();
-    ctx.fillStyle = "rgb(255," + (255 - this.actualDuration * 1.3) + ",0)";
+    ctx.fillStyle = "rgb(255," + (255 - this.actualDuration * 2) + ",0)";
     ctx.beginPath();
     ctx.arc(this.posx, this.posy, this.radius, 0, Math.PI*2, true);
     ctx.closePath();
@@ -246,17 +247,18 @@ class MunitionGrenaille extends Munition {
 
 class MunitionChevrotine extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
-    super (idTank, "Chevrotine", 32, 20, posx, posy, visex, visey);
+    super (idTank, "Chevrotine", 30, 20, posx, posy, visex, visey);
     this.angle = Math.atan( (visey - posy) / (visex - posx) );
-    this.maxDuration = 40;
+    this.maxDuration = 24;
     this.anglecanonx = anglecanonx;
     this.anglecanony = anglecanony;
     this.radius = 8;
     this.idmun = 3;
+    this.havesummoning = false;
 
     // la vitesse de cette munition est de 6
-    this.dx = Math.cos(this.angle) * 6;
-    this.dy = Math.sin(this.angle) * 6;
+    this.dx = Math.cos(this.angle) * 8;
+    this.dy = Math.sin(this.angle) * 8;
 
     if (visex < this.posx) {
         this.dx *= -1;
@@ -271,10 +273,11 @@ class MunitionChevrotine extends Munition {
   }
 
   move () {
-    if (this.actualDuration >= this.maxDuration) {
-      for (let i = 0; i < 16; i++) {
+    if (!this.havesummoning && this.actualDuration >= this.maxDuration) {
+      for (let i = 0; i < 32; i++) {
         listMunitions.push(new MunitionSummonChevrotine (this.idTank, this.posx, this.posy, this.dx, this.dy, this.angle, this.visex, this.visey));
       }
+      this.havesummoning = true;
       return false;
     }
     if (this.posx < 0 || this.posx > canvas.width) {
@@ -309,8 +312,8 @@ class MunitionChevrotine extends Munition {
 
 class MunitionSummonChevrotine extends Munition {
   constructor (idTank, posx, posy, dx, dy, angle, visex, visey) {
-    super (idTank, "Grenaille", 30, 8, posx, posy, visex, visey);
-    this.maxDuration = 50;
+    super (idTank, "Chevrotine", 0, 4, posx, posy, visex, visey);
+    this.maxDuration = 36;
     this.idmun = 4;
     this.radius = 2;
 
