@@ -1,4 +1,5 @@
 window.onload = init;
+window.onresize = resize;
 
 var gameover = false;
 var constPI = Math.PI / 180;
@@ -6,12 +7,25 @@ var constPI = Math.PI / 180;
 
 // fonction d 'initialisation de la partie'
 function initializeGame () {
+    score = 0;
     mainTank = new Tank(1, 100, 100, 50, 120, angledft, 4, 10000, "#e6a2a2", "#c06060", "#c08080");
     listEnnemisTank = [];
     for (let i = 0; i < 1; i++) { summonEnnemyTank(); }
+    drawCanvasWeapon(ctxmun, mainTank.getIdMunition());
     play();
 }
 
+function resize () {
+  canvas.width = window.innerWidth;
+  canvas.style.left = "0px";
+  canvasBackground.width = window.innerWidth;
+  canvasBackground.style.left = "0px";
+  canvasmun.width = window.innerWidth;
+  canvasmun.style.left = "0px";
+
+  drawBackground ();
+  drawCanvasWeapon(ctxmun, mainTank.getIdMunition());
+}
 
 function init () {
   // récupération du canvas
@@ -20,10 +34,11 @@ function init () {
   canvas = document.querySelector("#canvasTankilla");
   canvasBackground = document.querySelector("#canvasTankillaBackGround");
   canvasmun = document.querySelector("#canvasWeapon");
-
   ctx = canvas.getContext("2d");
   ctxbg = canvasBackground.getContext("2d");
-  ctxmun = canvasmun.getContext("2d");
+  ctxmun = canvasmun.getContext("2d");;
+
+  score = 0;
 
   idAnim = 0;
   shoot = false;
@@ -118,8 +133,10 @@ function init () {
   });
 
 
-  drawBackground ();
+
+
   initializeGame ();
+  resize();
   drawCanvasWeapon(ctxmun, mainTank.getIdMunition());
 }
 
@@ -212,9 +229,10 @@ function calcangle (tank, angles) {
 }
 
 function killing () {
-  for (let i=0; i < listEnnemisTank.length; i++) {
+  for (let i=listEnnemisTank.length-1; i >= 0; i--) {
     let ennemiTank = listEnnemisTank[i];
     if (ennemiTank.getLife() <= 0) {
+      score++;
       listEnnemisTank.splice(i, 1);
       summonEnnemyTank();
     }
@@ -242,17 +260,21 @@ function drawAll () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
-  // on dessine :
-  // - le tank
-  mainTank.drawTank(ctx, mouse.x, mouse.y);
 
+  // on dessine :
+  // - les tanks
   listEnnemisTank.forEach((ennemiTank) => {
     ennemiTank.drawTank(ctx, mainTank.getPosX(), mainTank.getPosY());
   });
+  mainTank.drawTank(ctx, mouse.x, mouse.y);
   // - les munitions
   listMunitions.forEach((munition) => {
     munition.draw(ctx);
   });
+
+
+    // dessin de l'avion
+    // Plane.drawPlane (ctx, 200, 200, 90);
 
   // on bouge
   mainTank.move();
@@ -386,9 +408,12 @@ function drawCanvasWeapon (ctx, idWeapon) {
 
 function diedMessage () {
   ctx.font = "11em Arial";
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "skyblue";
   ctx.fillText("GAME OVER", canvas.width / 16, canvas.height / 2);
   ctx.strokeText("GAME OVER", canvas.width / 16, canvas.height / 2);
+  ctx.font = "7em Arial";
+  ctx.fillText("Votre score: " + score, canvas.width / 5, canvas.height * 0.8);
+  ctx.strokeText("Votre score: " + score, canvas.width / 5, canvas.height * 0.8);
 }
 
 function affine (x1, y1, x2, y2) {

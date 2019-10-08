@@ -159,8 +159,8 @@ class MunitionFire extends Munition {
     this.idmun = 1;
 
     // la vitesse de cette munition est de 5
-    this.dx = Math.cos(this.angle) * 5;
-    this.dy = Math.sin(this.angle) * 5;
+    this.dx = Math.cos(this.angle) * 6;
+    this.dy = Math.sin(this.angle) * 6;
 
     this.radius = 10;
 
@@ -177,12 +177,12 @@ class MunitionFire extends Munition {
   }
 
   dropPower () {
-    this.power = this.basepower - Math.log((this.actualDuration+1));
+    this.power = this.basepower - Math.log((this.actualDuration+1) * 0.8);
   }
 
   draw (ctx) {
     this.dropPower ();
-    ctx.fillStyle = "rgb(255," + (255 - this.actualDuration * 2) + ",0)";
+    ctx.fillStyle = "rgb(255," + (255 - this.actualDuration * 2.5) + ",0)";
     ctx.beginPath();
     ctx.arc(this.posx, this.posy, this.radius, 0, Math.PI*2, true);
     ctx.closePath();
@@ -247,18 +247,18 @@ class MunitionGrenaille extends Munition {
 
 class MunitionChevrotine extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
-    super (idTank, "Chevrotine", 30, 20, posx, posy, visex, visey);
+    super (idTank, "Chevrotine", 50, 20, posx, posy, visex, visey);
     this.angle = Math.atan( (visey - posy) / (visex - posx) );
-    this.maxDuration = 24;
+    this.maxDuration = 20;
     this.anglecanonx = anglecanonx;
     this.anglecanony = anglecanony;
     this.radius = 8;
     this.idmun = 3;
     this.havesummoning = false;
 
-    // la vitesse de cette munition est de 6
-    this.dx = Math.cos(this.angle) * 8;
-    this.dy = Math.sin(this.angle) * 8;
+    // la vitesse de cette munition est de 9
+    this.dx = Math.cos(this.angle) * 9;
+    this.dy = Math.sin(this.angle) * 9;
 
     if (visex < this.posx) {
         this.dx *= -1;
@@ -274,7 +274,7 @@ class MunitionChevrotine extends Munition {
 
   move () {
     if (!this.havesummoning && this.actualDuration >= this.maxDuration) {
-      for (let i = 0; i < 32; i++) {
+      for (let i = 0; i < 28; i++) {
         listMunitions.push(new MunitionSummonChevrotine (this.idTank, this.posx, this.posy, this.dx, this.dy, this.angle, this.visex, this.visey));
       }
       this.havesummoning = true;
@@ -317,8 +317,8 @@ class MunitionSummonChevrotine extends Munition {
     this.idmun = 4;
     this.radius = 2;
 
-    this.dx = dx + Math.random()*1.2-0.6;
-    this.dy = dy + Math.random()*1.2-0.6;
+    this.dx = dx + Math.random()*1.4-0.7;
+    this.dy = dy + Math.random()*1.4-0.7;
 
     this.angle = angle * constPI;
   }
@@ -386,6 +386,7 @@ class MunitionLove extends Munition {
   }
 
   static drawMunition (ctx, posx, posy) {
+    let angle = 0;
     ctx.fillStyle = "rgb(255, 200 ,200)";
     // dessinons la base, un carré
     ctx.beginPath();
@@ -418,7 +419,7 @@ class MunitionLove extends Munition {
 // plus il est grand, plus il tape fort
 class MunitionBulle extends Munition {
   constructor (idTank, posx, posy, anglecanonx, anglecanony, visex, visey) {
-    super (idTank, "Bubulles", 24, 35, posx, posy, visex, visey);
+    super (idTank, "Bubulles", 24, 40, posx, posy, visex, visey);
 
     this.angle = Math.atan( (visey - posy) / (visex - posx) )+ Math.random() * 1.2 - 0.6;
     this.maxDuration = 60 + Math.random() * 180;
